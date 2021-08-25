@@ -13,17 +13,18 @@ import se.nackademin.java20.lab1.application.BankService;
 @Controller
 public class BankResource {
 
+
     private final BankService bankService;
 
 
-    public BankResource(BankService bankService){
+    public BankResource(BankService bankService) {
         this.bankService = bankService;
     }
 
     @GetMapping("/bank/{holder}/account")
     public String openAccount(@PathVariable("holder") String holder) {
-       final Account account = bankService.openAccount(holder);
-        return "redirect:/bank/unknown/account/1";
+        final Account account = bankService.openAccount(holder);
+        return "redirect:/bank/" + account.getHolder() + "/account/" + account.getId();
     }
 
     @GetMapping("/bank/{holder}/account/{accountId}")
@@ -33,4 +34,16 @@ public class BankResource {
         return "bank";
     }
 
+    @GetMapping("/bank/{holder}/account/{accountId}/balance/")
+    public String showBalance(@PathVariable("holder") String holder, @PathVariable("accountId") Long accountId, Model model) {
+        final Account account = bankService.checkBalance(holder, accountId);
+        //int balance = account.getBalance();
+        model.addAttribute("holder", holder);
+        model.addAttribute("accountId", accountId);
+        model.addAttribute("balance", account.getBalance());
+
+        return "balance";
+
+
+    }
 }
